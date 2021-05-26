@@ -118,7 +118,7 @@ namespace LlamaLibrary
 
 						if (PartyManager.IsInParty)
 						{
-							var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Protect II") && p.IsInObjectManager && Core.Me.Distance(p.GameObject) < 30);
+							var var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Protect II") && p.IsInObjectManager && p.BattleCharacter.IsAlive && Core.Me.Distance(p.GameObject) < 30);
 							if (members.Any())
 							{
 								foreach (var partyMember in members)
@@ -146,7 +146,7 @@ namespace LlamaLibrary
 
 						if (PartyManager.IsInParty)
 						{
-							var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Shell II") && p.IsInObjectManager && Core.Me.Distance(p.GameObject) < 30);
+							var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Shell II") && p.IsInObjectManager && p.BattleCharacter.IsAlive && Core.Me.Distance(p.GameObject) < 30);
 							if (members.Any())
 							{
 								foreach (var partyMember in members)
