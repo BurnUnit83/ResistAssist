@@ -104,7 +104,6 @@ namespace LlamaLibrary
 					 foreach (var fate in FateManager.ActiveFates)
 					 var units = GameObjectManager.GameObjects;
 					foreach(var unit in units.OrderBy(r=>r.Distance()))
-
 					*/
 					if(DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Protect II") || DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Protect II"))
 					{
@@ -118,7 +117,7 @@ namespace LlamaLibrary
 
 						if (PartyManager.IsInParty)
 						{
-							var var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Protect II") && p.IsInObjectManager && p.BattleCharacter.IsAlive && Core.Me.Distance(p.GameObject) < 30);
+							var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Protect II") && p.IsInObjectManager && p.BattleCharacter.IsAlive && Core.Me.Distance(p.GameObject) < 30);
 							if (members.Any())
 							{
 								foreach (var partyMember in members)
@@ -162,26 +161,33 @@ namespace LlamaLibrary
 							}
 						}
 					}					
-					if((!Core.Me.HasAura("Lost Bubble")) && ((DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Bubble")) || (DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Bubble"))))
+					if(DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Bravery") || DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Bravery"))
 					{
-						ActionManager.Dismount();
-						Log("Casting Lost Bubble");
-						ActionManager.DoAction(23917, Core.Me);
-						await Coroutine.Sleep(5000);
-					}
-					if((!Core.Me.HasAura("Lost Stoneskin")) && ((DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Stoneskin")) || (DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Stoneskin"))))
-					{
-						ActionManager.Dismount();
-						Log("Casting Lost Stoneskin");
-						ActionManager.DoAction(20712, Core.Me);
-						await Coroutine.Sleep(5000);
-					}
-					if((!Core.Me.HasAura("Lost Stoneskin II")) && ((DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Stoneskin II")) || (DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Stoneskin II"))))
-					{
-						ActionManager.Dismount();
-						Log("Casting Lost Stoneskin II");
-						ActionManager.DoAction(23908, Core.Me);
-						await Coroutine.Sleep(5000);
+						if(!Core.Me.HasAura("Lost Bravery"))
+						{
+							ActionManager.Dismount();
+							Log("Casting Lost Bravery");
+							ActionManager.DoAction(23915, Core.Me);
+							await Coroutine.Sleep(5000);
+						}
+
+						if (PartyManager.IsInParty)
+						{
+							var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Bravery") && p.IsInObjectManager && p.BattleCharacter.IsAlive && Core.Me.Distance(p.GameObject) < 30);
+							if (members.Any())
+							{
+								foreach (var partyMember in members)
+								{
+									if (partyMember.IsInObjectManager && Core.Me.Distance(partyMember.GameObject) < 30)
+									{
+										ActionManager.Dismount();
+										Log(string.Format("Casting Lost Bravery on {0}", partyMember.Name));
+										ActionManager.DoAction(20713, partyMember.GameObject);
+										await Coroutine.Sleep(5000);
+									}
+								}
+							}
+						}
 					}
 					
 				}
