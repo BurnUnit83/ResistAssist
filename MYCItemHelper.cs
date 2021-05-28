@@ -9,7 +9,7 @@ using ff14bot.Managers;
 
 namespace ResistAssist
 {
-    public static class MYCItemHelper
+  public static class MYCItemHelper
     {
         public static List<MYCItem> ItemList;
         
@@ -21,6 +21,17 @@ namespace ResistAssist
         static IntPtr CanUseAction;
         static IntPtr ActionManager;
         static IntPtr UseMYCItem ;
+        static int ActionsOffset; // 0x568
+        static int Duty1Charges; // 0x54
+        static int Duty2Charges; //0x55
+        static int MaxOffset; //0x1C
+        static int arrayChargesStartOff; //0x1C
+
+        public static (string Action, int Charges, int MaxCharges) DutyAction1 => GetDutyActions(1);
+        public static (string Action, int Charges, int MaxCharges) DutyAction2 => GetDutyActions(2);
+
+        public static List<(string Action, int Charges, int MaxCharges)> DutyActions = GetDutyActions();
+
         
         static MYCItemHelper()
         {
@@ -34,6 +45,11 @@ namespace ResistAssist
                 CanUseAction = pf.Find("48 89 5C 24 ? 4C 89 4C 24 ? 48 89 4C 24 ? 55 56 57 48 81 EC ? ? ? ?");
                 ActionManager = pf.Find("48 8D 0D ? ? ? ? 44 8D 42 ? E8 ? ? ? ? 85 C0 Add 3 TraceRelative");
                 UseMYCItem = pf.Find("48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC ? 8B F2 8B D9 E8 ? ? ? ? 48 8B F8");
+                ActionsOffset = pf.Find("48 8D 88 ? ? ? ? 44 8B CF Add 3 Read32").ToInt32();
+                Duty1Charges = pf.Find("44 88 41 ? 40 88 79 ?  Add 3 Read8").ToInt32();
+                Duty2Charges = pf.Find("40 88 79 ? E9 ? ? ? ?  Add 3 Read8").ToInt32();
+                MaxOffset = pf.Find("4C 8D 71 ? F2 41 0F 11 06 Add 3 Read8").ToInt32();
+                arrayChargesStartOff = pf.Find("41 89 46 ? 48 8B 0D ? ? ? ? E8 ? ? ? ? Add 3 Read8").ToInt32();
             }
 
             ItemList = new List<MYCItem>()
@@ -167,6 +183,27 @@ namespace ResistAssist
                 //ResistAssist.Log($"Read to cast");
                 await Cast(itemId);
             }
+        }
+
+        public static (string Action, int Charges, int MaxCharges) GetDutyActions(int i)
+        {
+            var director = DirectorManager.ActiveDirector.Pointer;
+            var DutyCurCharges = Core.Memory.ReadArray<byte>(director + ActionsOffset + Duty1Charges,2);
+            var DutyMaxCharges = Core.Memory.ReadArray<byte>(director + ActionsOffset + MaxOffset + arrayChargesStartOff,2);
+
+            return i == 1 ? (DutyManager.DutyAction1.Name, DutyCurCharges[0], DutyMaxCharges[0]) : (DutyManager.DutyAction2.Name, DutyCurCharges[1], DutyMaxCharges[1]);
+        }
+        
+        public static List<(string Action, int Charges, int MaxCharges)> GetDutyActions()
+        {
+            var result = new List<(string Action, int Charges, int MaxCharges)>();
+            var director = DirectorManager.ActiveDirector.Pointer;
+            var DutyCurCharges = Core.Memory.ReadArray<byte>(director + ActionsOffset + Duty1Charges,2);
+            var DutyMaxCharges = Core.Memory.ReadArray<byte>(director + ActionsOffset + MaxOffset + arrayChargesStartOff,2);
+
+            result.Add((DutyManager.DutyAction1.Name, DutyCurCharges[0], DutyMaxCharges[0]));
+            result.Add((DutyManager.DutyAction2.Name, DutyCurCharges[1], DutyMaxCharges[1]));
+            return result;
         }
     }
     

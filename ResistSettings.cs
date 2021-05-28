@@ -85,6 +85,23 @@ namespace ResistAssist
                 }
             }
         }
+        
+        private bool _ToRaise;
+        
+        [Description("Raise people you pass by when on a Raise casting class.")]
+        [DefaultValue(false)]
+        public bool ToRaise
+        {
+            get => _ToRaise;
+            set
+            {
+                if (_ToRaise != value)
+                {
+                    _ToRaise = value;
+                    Save();
+                }
+            }
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
