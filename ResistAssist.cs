@@ -402,7 +402,7 @@ namespace ResistAssist
 				   //   DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Bubble"))
 				   if (Actions.Any(i => i.Action == "Lost Bubble"))
 				   {
-					   (var action, var charges, var maxCharges) = Actions.First(i => i.Action == "Lost Bravery");
+					   (var action, var charges, var maxCharges) = Actions.First(i => i.Action == "Lost Bubble");
 					   if (charges > 0 && maxCharges != 0)
 					   {
 						   if (!Core.Me.HasAura("Lost Bubble"))
