@@ -25,7 +25,7 @@ namespace ResistAssist
           
         private static NamedPipeClientStream pipe;
 
-        public override string Author { get; } = "NeonNeo86, DomesticWarlord86";
+        public override string Author { get; } = " NeonNeo86, DomesticWarlord86, nt153133";
 
         public override Version Version => new Version(1, 0);
 
@@ -102,7 +102,7 @@ namespace ResistAssist
 		}
         private async Task<bool> LostActionsCast()
         {
-            if (DutyManager.InInstance && CanLostActionsCast())
+            if (DutyManager.InInstance && Core.Me.IsAlive && CanLostActionsCast())
             {
 						  
 			   //Lost Protect  		Status = 2333, Item = 30908, Action = 20709
@@ -112,119 +112,260 @@ namespace ResistAssist
 			   //Lost Bubble		Status = 2563, Item = 33790, Action = 23917
 			   //Lost Stone Skin    Status = ??,   Item = 30911, Action = 20712
 			   //Lost Stone Skin II Status = ??,   Item = 33781, Action = 23908
-			   
-				if(!Core.Me.InCombat)
-				{
+			   //Lost Arise										Action = 20730
+			   //Lost Bravery									Action = 20713
+
+
+			   //Lost Arise										Action = 20730
+			   if (DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Arise") ||
+			       DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Arise") &&
+			       PartyManager.IsInParty)
+			   {
+				   var members = PartyManager.AllMembers.Where(p =>
+					   !p.BattleCharacter.HasAura(148) && p.IsInObjectManager && !p.BattleCharacter.IsAlive &&
+					   Core.Me.Distance(p.GameObject) < 30 && !p.BattleCharacter.IsMe);
+				   if (members.Any())
+				   {
+					   foreach (var partyMember in members)
+					   {
+						   if (partyMember.IsInObjectManager && Core.Me.Distance(partyMember.GameObject) < 30)
+						   {
+							   ActionManager.Dismount();
+							   Log(string.Format("Casting Lost Arise on {0}", partyMember.Name));
+							   ActionManager.DoAction(20730, partyMember.GameObject);
+							   await Coroutine.Sleep(5000);
+						   }
+					   }
+				   }
+			   }
+
+			   if(!Core.Me.InCombat)
+			   {
 					
-					//Pass in the itemID of the item you want to cast, see item list in MYCItemHelper.cs
-					// int itemID = 44; //Essence of the Veteran
-					// await MYCItemHelper.CastIfNoAura(itemID);
-					if (Settings.EssenceSelection != ResistSettings.EssenceSelectionEnum.Not_Selected)
-					{
-						//Log($"Essence selection made.");
-						int itemID = ((int)Settings.EssenceSelection);
-						if (MYCItemHelper.HaveItem(itemID) && !MYCItemHelper.HaveAura(itemID))
-						{
-							Log($"Using  {Settings.EssenceSelection}");
-							await MYCItemHelper.CastIfNoAura(itemID);
-						}
-					}
+				   // Pass in the itemID of the item you want to cast, see item list in MYCItemHelper.cs
+				   // int itemID = 44; //Essence of the Veteran
+				   // await MYCItemHelper.CastIfNoAura(itemID);
+				   if (Settings.EssenceSelection != ResistSettings.EssenceSelectionEnum.Not_Selected)
+				   {
+					   //Log($"Essence selection made.");
+					   int itemID = ((int)Settings.EssenceSelection);
+					   if (MYCItemHelper.HaveItem(itemID) && !MYCItemHelper.HaveAura(itemID))
+					   {
+						   Log($"Using {Settings.EssenceSelection}");
+						   await MYCItemHelper.CastIfNoAura(itemID);
+					   }
+				   }
 
 
-					/*
-					TODO - Add Party Casting to Visible 
-					PartyManager.VisibleMembers.Any(x => !x.IsMe && x.BattleCharacter.IsAlive && x.BattleCharacter.InCombat
-					 foreach (var fate in FateManager.ActiveFates)
-					 var units = GameObjectManager.GameObjects;
-					foreach(var unit in units.OrderBy(r=>r.Distance()))
-					*/
-					if(DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Protect II") || DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Protect II"))
-					{
-						if(!Core.Me.HasAura("Lost Protect II"))
-						{
-							ActionManager.Dismount();
-							Log("Casting Lost Protect II");
-							ActionManager.DoAction(23915, Core.Me);
-							await Coroutine.Sleep(5000);
-						}
+				   /*
+				   TODO - Add Party Casting to Visible 
+				   PartyManager.VisibleMembers.Any(x => !x.IsMe && x.BattleCharacter.IsAlive && x.BattleCharacter.InCombat
+				    foreach (var fate in FateManager.ActiveFates)
+				    var units = GameObjectManager.GameObjects;
+				   foreach(var unit in units.OrderBy(r=>r.Distance()))
+				   */
 
-						if (PartyManager.IsInParty)
-						{
-							var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Protect II") && p.IsInObjectManager && p.BattleCharacter.IsAlive && Core.Me.Distance(p.GameObject) < 30);
-							if (members.Any())
-							{
-								foreach (var partyMember in members)
-								{
-									if (partyMember.IsInObjectManager && Core.Me.Distance(partyMember.GameObject) < 30)
-									{
-										ActionManager.Dismount();
-										Log(string.Format("Casting Lost Protect II on {0}", partyMember.Name));
-										ActionManager.DoAction(23915, partyMember.GameObject);
-										await Coroutine.Sleep(5000);
-									}
-								}
-							}
-						}
-					}
-					if(DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Shell II") || DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Shell II"))
-					{
-						if(!Core.Me.HasAura("Lost Shell II"))
-						{
-							ActionManager.Dismount();
-							Log("Casting Lost Shell II");
-							ActionManager.DoAction(23915, Core.Me);
-							await Coroutine.Sleep(5000);
-						}
+				   //Lost Protect  		Status = 2333, Item = 30908, Action = 20709
+				   if(DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Protect") 
+				      || DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Protect"))
+				   {
+					   if(!Core.Me.HasAura("Lost Protect"))
+					   {
+						   ActionManager.Dismount();
+						   Log("Casting Lost Protect on " +Core.Me.Name);
+						   ActionManager.DoAction(20709, Core.Me);
+						   await Coroutine.Sleep(5000);
+					   }
 
-						if (PartyManager.IsInParty)
-						{
-							var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Shell II") && p.IsInObjectManager && p.BattleCharacter.IsAlive && Core.Me.Distance(p.GameObject) < 30);
-							if (members.Any())
-							{
-								foreach (var partyMember in members)
-								{
-									if (partyMember.IsInObjectManager && Core.Me.Distance(partyMember.GameObject) < 30)
-									{
-										ActionManager.Dismount();
-										Log(string.Format("Casting Lost Shell II on {0}", partyMember.Name));
-										ActionManager.DoAction(23916, partyMember.GameObject);
-										await Coroutine.Sleep(5000);
-									}
-								}
-							}
-						}
-					}					
-					if(DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Bravery") || DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Bravery"))
-					{
-						if(!Core.Me.HasAura("Lost Bravery"))
-						{
-							ActionManager.Dismount();
-							Log("Casting Lost Bravery");
-							ActionManager.DoAction(23915, Core.Me);
-							await Coroutine.Sleep(5000);
-						}
+					   if (PartyManager.IsInParty)
+					   {
+						   var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Protect II") && 
+						                                                    !p.BattleCharacter.HasAura("Lost Protect") && p.IsInObjectManager && 
+						                                                    p.BattleCharacter.IsAlive && Core.Me.Distance(p.GameObject) < 30 &&
+						                                                    !p.BattleCharacter.IsMe);
+						   if (members.Any())
+						   {
+							   foreach (var partyMember in members)
+							   {
+								   if (partyMember.IsInObjectManager && Core.Me.Distance(partyMember.GameObject) < 30)
+								   {
+									   ActionManager.Dismount();
+									   Log(string.Format("Casting Lost Protect on {0}", partyMember.Name));
+									   ActionManager.DoAction(20709, partyMember.GameObject);
+									   await Coroutine.Sleep(5000);
+								   }
+							   }
+						   }
+					   }
+				   }				   
+				   
+				   //Lost Protect II 	Status = 2561, Item = 33788, Action = 23915
+				   if(DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Protect II") || 
+				      DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Protect II"))
+				   {
+					   if(!Core.Me.HasAura("Lost Protect II"))
+					   {
+						   ActionManager.Dismount();
+						   Log("Casting Lost Protect II on " +Core.Me.Name);
+						   ActionManager.DoAction(23915, Core.Me);
+						   await Coroutine.Sleep(5000);
+					   }
 
-						if (PartyManager.IsInParty)
-						{
-							var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Bravery") && p.IsInObjectManager && p.BattleCharacter.IsAlive && Core.Me.Distance(p.GameObject) < 30);
-							if (members.Any())
-							{
-								foreach (var partyMember in members)
-								{
-									if (partyMember.IsInObjectManager && Core.Me.Distance(partyMember.GameObject) < 30)
-									{
-										ActionManager.Dismount();
-										Log(string.Format("Casting Lost Bravery on {0}", partyMember.Name));
-										ActionManager.DoAction(20713, partyMember.GameObject);
-										await Coroutine.Sleep(5000);
-									}
-								}
-							}
-						}
-					}
+					   if (PartyManager.IsInParty)
+					   {
+						   var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Protect II") && 
+						                                                    p.IsInObjectManager && p.BattleCharacter.IsAlive && Core.Me.Distance(p.GameObject) < 30 &&
+						                                                    !p.BattleCharacter.IsMe);
+						   if (members.Any())
+						   {
+							   foreach (var partyMember in members)
+							   {
+								   if (partyMember.IsInObjectManager && Core.Me.Distance(partyMember.GameObject) < 30)
+								   {
+									   ActionManager.Dismount();
+									   Log(string.Format("Casting Lost Protect II on {0}", partyMember.Name));
+									   ActionManager.DoAction(23915, partyMember.GameObject);
+									   await Coroutine.Sleep(5000);
+								   }
+							   }
+						   }
+					   }
+				   }
+
+				   //Lost Shell    		Status = 2334, Item = 30909, Action = 20710
+				   if(DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Shell") || 
+				      DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Shell"))
+				   {
+					   if(!Core.Me.HasAura("Lost Shell"))
+					   {
+						   ActionManager.Dismount();
+						   Log("Casting Lost Shell on " +Core.Me.Name);
+						   ActionManager.DoAction(20710, Core.Me);
+						   await Coroutine.Sleep(5000);
+					   }
+
+					   if (PartyManager.IsInParty)
+					   {
+						   var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Shell II") && 
+						                                                    !p.BattleCharacter.HasAura("Lost Shell") && p.IsInObjectManager && p.BattleCharacter.IsAlive && 
+						                                                    Core.Me.Distance(p.GameObject) < 30 && !p.BattleCharacter.IsMe);
+						   if (members.Any())
+						   {
+							   foreach (var partyMember in members)
+							   {
+								   if (partyMember.IsInObjectManager && Core.Me.Distance(partyMember.GameObject) < 30)
+								   {
+									   ActionManager.Dismount();
+									   Log(string.Format("Casting Lost Shell on {0}", partyMember.Name));
+									   ActionManager.DoAction(20710, partyMember.GameObject);
+									   await Coroutine.Sleep(5000);
+								   }
+							   }
+						   }
+					   }
+				   }
+				   
+				   //Lost Shell II 		Status = 2562, Item = 33789, Action = 23916
+				   if(DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Shell II") || 
+				      DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Shell II"))
+				   {
+					   if(!Core.Me.HasAura("Lost Shell II"))
+					   {
+						   ActionManager.Dismount();
+						   Log("Casting Lost Shell II on " +Core.Me.Name);
+						   ActionManager.DoAction(23916, Core.Me);
+						   await Coroutine.Sleep(5000);
+					   }
+
+					   if (PartyManager.IsInParty)
+					   {
+						   var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Shell II") && 
+						                                                    p.IsInObjectManager && p.BattleCharacter.IsAlive && Core.Me.Distance(p.GameObject) < 30 &&
+						                                                    !p.BattleCharacter.IsMe);
+						   if (members.Any())
+						   {
+							   foreach (var partyMember in members)
+							   {
+								   if (partyMember.IsInObjectManager && Core.Me.Distance(partyMember.GameObject) < 30)
+								   {
+									   ActionManager.Dismount();
+									   Log(string.Format("Casting Lost Shell II on {0}", partyMember.Name));
+									   ActionManager.DoAction(23916, partyMember.GameObject);
+									   await Coroutine.Sleep(5000);
+								   }
+							   }
+						   }
+					   }
+				   }
+				   
+				   //Lost Bravery									Action = 20713
+				   if(DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Bravery") || 
+				      DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Bravery"))
+				   {
+					   if(!Core.Me.HasAura("Lost Bravery"))
+					   {
+						   ActionManager.Dismount();
+						   Log("Casting Lost Bravery on " +Core.Me.Name);
+						   ActionManager.DoAction(20713, Core.Me);
+						   await Coroutine.Sleep(5000);
+					   }
+
+					   if (PartyManager.IsInParty)
+					   {
+						   var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Bravery") && 
+						                                                    p.IsInObjectManager && p.BattleCharacter.IsAlive && Core.Me.Distance(p.GameObject) < 30 &&
+						                                                    !p.BattleCharacter.IsMe);
+						   if (members.Any())
+						   {
+							   foreach (var partyMember in members)
+							   {
+								   if (partyMember.IsInObjectManager && Core.Me.Distance(partyMember.GameObject) < 30)
+								   {
+									   ActionManager.Dismount();
+									   Log(string.Format("Casting Lost Bravery on {0}", partyMember.Name));
+									   ActionManager.DoAction(20713, partyMember.GameObject);
+									   await Coroutine.Sleep(5000);
+								   }
+							   }
+						   }
+					   }
+				   }
+				   
+				   //Lost Bubble		Status = 2563, Item = 33790, Action = 23917
+				   if(DutyManager.DutyAction1 == DataManager.GetSpellData("Lost Bubble") || 
+				      DutyManager.DutyAction2 == DataManager.GetSpellData("Lost Bubble"))
+				   {
+					   if(!Core.Me.HasAura("Lost Bubble"))
+					   {
+						   ActionManager.Dismount();
+						   Log("Casting Lost Bubble on " +Core.Me.Name);
+						   ActionManager.DoAction(23917, Core.Me);
+						   await Coroutine.Sleep(5000);
+					   }
+
+					   if (PartyManager.IsInParty)
+					   {
+						   var members = PartyManager.AllMembers.Where(p => !p.BattleCharacter.HasAura("Lost Bubble") && 
+						                                                    p.IsInObjectManager && p.BattleCharacter.IsAlive && Core.Me.Distance(p.GameObject) < 30 &&
+						                                                    !p.BattleCharacter.IsMe);
+						   if (members.Any())
+						   {
+							   foreach (var partyMember in members)
+							   {
+								   if (partyMember.IsInObjectManager && Core.Me.Distance(partyMember.GameObject) < 30)
+								   {
+									   ActionManager.Dismount();
+									   Log(string.Format("Casting Lost Bubble on {0}", partyMember.Name));
+									   ActionManager.DoAction(23917, partyMember.GameObject);
+									   await Coroutine.Sleep(5000);
+								   }
+							   }
+						   }
+					   }
+				   }				   
 					
-				}
-				return false;
+			   }
+			   return false;
 			}
 			return false;
 		}
