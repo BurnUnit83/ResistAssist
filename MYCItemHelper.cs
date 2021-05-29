@@ -26,11 +26,14 @@ namespace ResistAssist
         static int Duty2Charges; //0x55
         static int MaxOffset; //0x1C
         static int arrayChargesStartOff; //0x1C
+        private static int timeOffset;
 
         public static (string Action, int Charges, int MaxCharges) DutyAction1 => GetDutyActions(1);
         public static (string Action, int Charges, int MaxCharges) DutyAction2 => GetDutyActions(2);
 
         public static List<(string Action, int Charges, int MaxCharges)> DutyActions = GetDutyActions();
+        
+        public static TimeSpan TimeLeftInDuty => TimeSpan.FromSeconds(Core.Memory.Read<float>(DirectorManager.ActiveDirector.Pointer + timeOffset));
 
         
         static MYCItemHelper()
@@ -50,6 +53,7 @@ namespace ResistAssist
                 Duty2Charges = pf.Find("40 88 79 ? E9 ? ? ? ?  Add 3 Read8").ToInt32();
                 MaxOffset = pf.Find("4C 8D 71 ? F2 41 0F 11 06 Add 3 Read8").ToInt32();
                 arrayChargesStartOff = pf.Find("41 89 46 ? 48 8B 0D ? ? ? ? E8 ? ? ? ? Add 3 Read8").ToInt32();
+                timeOffset = pf.Find("F3 0F 10 81 ? ? ? ? 0F 2F C4 Add 4 Read32").ToInt32();
             }
 
             ItemList = new List<MYCItem>()

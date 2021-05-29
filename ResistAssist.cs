@@ -150,7 +150,7 @@ namespace ResistAssist
 		        }		        
 	        }
 	        
-            if (DutyManager.InInstance && Core.Me.IsAlive && CanLostActionsCast())
+            if (DutyManager.InInstance && Core.Me.IsAlive && !CommonBehaviors.IsLoading && CanLostActionsCast())
             {
 						  
 	            var Actions = new List<(string Action, int Charges, int MaxCharges)>();
