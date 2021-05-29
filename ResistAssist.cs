@@ -141,7 +141,7 @@ namespace ResistAssist
 					        {
 						        ActionManager.Dismount();
 						        Log(string.Format("Casting Verraise on {0}", partyMember.Name));
-						        ActionManager.DoAction(13640, partyMember);
+						        ActionManager.DoAction(7523, partyMember);
 						        await Coroutine.Sleep(10000);						        
 					        }
 
