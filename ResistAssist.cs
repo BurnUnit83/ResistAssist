@@ -109,7 +109,7 @@ namespace ResistAssist
 	        // Cast Raise on nearby people.
 	        if (DutyManager.InInstance && Core.Me.IsAlive && Jobs.Contains(Core.Me.CurrentJob) && ResistSettings.Instance.ToRaise)
 	        {
-		        var members = GameObjectManager.GetObjectsOfType<BattleCharacter>().Where(p => !p.IsNpc && !p.HasAura(148) && !p.IsAlive && Core.Me.Distance(p) < 30 && !p.IsMe);
+		        var members = GameObjectManager.GetObjectsOfType<BattleCharacter>().Where(p => !p.IsNpc && !p.HasAura(148) && !p.IsAlive && Core.Me.Distance(p) < 30 && !p.IsMe).ToList();
 		        if (members.Any())
 		        {
 			        foreach (var partyMember in members)
