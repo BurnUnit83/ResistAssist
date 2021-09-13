@@ -25,8 +25,7 @@ namespace ResistAssist
         private static readonly string name = "ResistAssist";
         
         private Composite ResistAssistRoutine;
-        
-          
+         
         private static NamedPipeClientStream pipe;
 
         public override string Author { get; } = " NeonNeo86, DomesticWarlord86, nt153133";
@@ -40,7 +39,7 @@ namespace ResistAssist
         public static ResistSettings Settings = ResistSettings.Instance;
         private ResistSettingsForm settings;
 
-        private int[] maps = new int[] { 975, 920 };
+        private int[] maps = new int[] { 975, 920, 732, 763, 795, 827 };
 		private bool CanLostActionsCast() => maps.Contains(WorldManager.ZoneId);
         public override void OnInitialize()
         {
