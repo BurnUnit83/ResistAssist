@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO.Pipes;
 using System.Linq;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
@@ -25,8 +24,6 @@ namespace ResistAssist
         private static readonly string name = "ResistAssist";
         
         private Composite ResistAssistRoutine;
-         
-        private static NamedPipeClientStream pipe;
 
         public override string Author { get; } = " NeonNeo86, DomesticWarlord86, nt153133";
 
